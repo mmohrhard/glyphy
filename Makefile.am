@@ -1,8 +1,10 @@
+ACLOCAL_AMFLAGS = -I m4
+
 NULL =
 
 EXTRA_DIST = \
 	autogen.sh \
-	ac_define_dir.m4 \
+	m4/ac_define_dir.m4 \
 	$(NULL)
 
 MAINTAINERCLEANFILES = \

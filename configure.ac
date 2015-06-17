@@ -5,6 +5,7 @@ AC_INIT([glyphy],
         [glyphy],
         [http://code.google.com/p/glyphy/])
 
+AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR([glyphy.pc.in])
 AC_CONFIG_HEADERS([config.h])
 
