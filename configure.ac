@@ -72,32 +72,43 @@ AC_DEFUN([GLYPHY_CHECK_PACKAGE],
 		fi
 	])
 	if [$HAVE_]PKG; then AC_DEFINE([HAVE_]PKG, 1, [Have ]pkg[ library]) fi
-	AM_CONDITIONAL([HAVE_]PKG, [$HAVE_]PKG)
 ])
 
-GLYPHY_CHECK_PACKAGE(freetype2, FT_Init_FreeType)
-if $android; then
-	GLYPHY_CHECK_PACKAGE(gl, glCreateShader,, GLESv2)
-	GLYPHY_CHECK_PACKAGE(glew, glewInit)
-	GLYPHY_CHECK_PACKAGE(glut, glutInit,, freeglut-gles2)
-	GLUT_CFLAGS=-DFREEGLUT_GLES2
-	AC_SUBST(GLUT_CFLAGS)
-	AC_DEFINE([__ANDROID__], 1, [On Android])
-else
-	GLYPHY_CHECK_PACKAGE(gl, glCreateShader, OpenGL)
-	GLYPHY_CHECK_PACKAGE(glew, glewInit)
-	GLYPHY_CHECK_PACKAGE(glut, glutInit, GLUT)
+AC_ARG_ENABLE([demo],
+              AS_HELP_STRING([--disable-demo], [disable build of demo]),
+              [], [enable_demo=yes]
+)
+
+if test "x$enable_demo" = "xyes"; then
+    GLYPHY_CHECK_PACKAGE(freetype2, FT_Init_FreeType)
+    if $android; then
+            GLYPHY_CHECK_PACKAGE(gl, glCreateShader,, GLESv2)
+            GLYPHY_CHECK_PACKAGE(glew, glewInit)
+            GLYPHY_CHECK_PACKAGE(glut, glutInit,, freeglut-gles2)
+            GLUT_CFLAGS=-DFREEGLUT_GLES2
+            AC_SUBST(GLUT_CFLAGS)
+            AC_DEFINE([__ANDROID__], 1, [On Android])
+    else
+            GLYPHY_CHECK_PACKAGE(gl, glCreateShader, OpenGL)
+            GLYPHY_CHECK_PACKAGE(glew, glewInit)
+            GLYPHY_CHECK_PACKAGE(glut, glutInit, GLUT)
+    fi
+
+    # Find default font, for the demo
+    AC_MSG_CHECKING([for default font])
+    DEFAULT_FONT="`fc-match -v 2>/dev/null | grep 'file:' | cut -d'\"' -f2`"
+    if test "x$DEFAULT_FONT" = x; then :; else
+            AC_DEFINE_UNQUOTED([DEFAULT_FONT], ["$DEFAULT_FONT"], [Default font file.])
+    fi
+    AC_MSG_RESULT($DEFAULT_FONT)
 fi
 
-dnl ===========================================================================
+AM_CONDITIONAL(HAVE_FREETYPE2, [test "x$HAVE_FREETYPE2" = "x1"])
+AM_CONDITIONAL(HAVE_GL, [test "x$HAVE_GL" = "x1"])
+AM_CONDITIONAL(HAVE_GLEW, [test "x$HAVE_GLEW" = "x1"])
+AM_CONDITIONAL(HAVE_GLUT, [test "x$HAVE_GLUT" = "x1"])
 
-# Find default font, for the demo
-AC_MSG_CHECKING([for default font])
-DEFAULT_FONT="`fc-match -v 2>/dev/null | grep 'file:' | cut -d'\"' -f2`"
-if test "x$DEFAULT_FONT" = x; then :; else
-	AC_DEFINE_UNQUOTED([DEFAULT_FONT], ["$DEFAULT_FONT"], [Default font file.])
-fi
-AC_MSG_RESULT($DEFAULT_FONT)
+AM_CONDITIONAL([BUILD_DEMO], [test "x$enable_demo" = "xyes"])
 
 dnl ===========================================================================
 
