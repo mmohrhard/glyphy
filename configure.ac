@@ -76,10 +76,11 @@ AC_DEFUN([GLYPHY_CHECK_PACKAGE],
 
 AC_ARG_ENABLE([demo],
               AS_HELP_STRING([--disable-demo], [disable build of demo]),
-              [], [enable_demo=yes]
+              [ENABLE_DEMO=$enable_demo], [ENABLE_DEMO=]
 )
+AC_SUBST([ENABLE_DEMO])
 
-if test "x$enable_demo" = "xyes"; then
+if test "x$ENABLE_DEMO" != "xno"; then
     GLYPHY_CHECK_PACKAGE(freetype2, FT_Init_FreeType)
     if $android; then
             GLYPHY_CHECK_PACKAGE(gl, glCreateShader,, GLESv2)
@@ -103,12 +104,12 @@ if test "x$enable_demo" = "xyes"; then
     AC_MSG_RESULT($DEFAULT_FONT)
 fi
 
-AM_CONDITIONAL(HAVE_FREETYPE2, [test "x$HAVE_FREETYPE2" = "x1"])
-AM_CONDITIONAL(HAVE_GL, [test "x$HAVE_GL" = "x1"])
-AM_CONDITIONAL(HAVE_GLEW, [test "x$HAVE_GLEW" = "x1"])
-AM_CONDITIONAL(HAVE_GLUT, [test "x$HAVE_GLUT" = "x1"])
+if test "x$HAVE_FREETYPE2" = "x1" -a "x$DEFAULT_FONT" != "x"; then
+    ENABLE_DEMO=yes
+fi
 
-AM_CONDITIONAL([BUILD_DEMO], [test "x$enable_demo" = "xyes"])
+AM_CONDITIONAL([BUILD_GL_DEMO], [test "x$HAVE_GL" = "x1" -a "x$HAVE_GLEW" = "x1" -a "x$HAVE_GLUT" = "x1"])
+AM_CONDITIONAL([BUILD_DEMO], [test "x$ENABLE_DEMO" = "xyes"])
 
 dnl ===========================================================================
 

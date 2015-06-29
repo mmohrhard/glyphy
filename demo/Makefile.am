@@ -8,9 +8,7 @@ BUILT_SOURCES =
 noinst_PROGRAMS =
 
 
-if HAVE_FREETYPE2
-if HAVE_GL
-if HAVE_GLUT
+if BUILD_GL_DEMO
 
 if ANDROID
 SUBDIRS += android
@@ -69,11 +67,6 @@ EXTRA_DIST += $(SHADERS)
 	mv "$@.tmp" "$@" || ($(RM) "$@.tmp"; false)
 
 endif
-endif
-endif
-
-
-if HAVE_FREETYPE2
 
 noinst_PROGRAMS += glyphy-validate
 glyphy_validate_CPPFLAGS = \
@@ -87,8 +80,5 @@ glyphy_validate_LDADD = \
 glyphy_validate_SOURCES = \
 	glyphy-validate.cc \
 	$(NULL)
-
-endif
-
 
 -include $(top_srcdir)/git.mk
